@@ -4,6 +4,7 @@ import com.github.estoque.dto.ProdutoDTO;
 import com.github.estoque.entity.ProdutoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -14,11 +15,8 @@ public interface ProdutoMapper {
 
     List<ProdutoDTO> toDTO(List<ProdutoEntity> produtoEntities);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "nome", target = "nome")
-    @Mapping(source = "preco", target = "preco")
-    @Mapping(source = "quantidade", target = "quantidade")
-    @Mapping(source = "dataValidade", target = "dataValidade")
-    @Mapping(source = "dataCadastro", target = "dataCadastro")
     ProdutoEntity toEntity(ProdutoDTO produtoDTO);
+
+    @Mapping(target = "id", ignore = true)
+    ProdutoEntity toEntity(ProdutoDTO produtoDTO, @MappingTarget ProdutoEntity entity);
 }

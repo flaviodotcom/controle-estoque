@@ -49,6 +49,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         if (produto == null) {
             throw new InputMismatchException("Produto com id " + id + " não encontrado");
         }
+        mapper.toEntity(produtoDTO, produto);
         repository.persist(produto);
     }
 
