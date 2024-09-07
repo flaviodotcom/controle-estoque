@@ -17,4 +17,6 @@ class ProdutoResourceTest {
              .body(is("Hello RESTEasy"));
     }
 
+    // TODO: ajustar teste criando um produto fixo no import.sql
+
 }

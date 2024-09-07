@@ -10,6 +10,8 @@ public interface ProdutoService {
 
     List<ProdutoDTO> listAll();
 
+    ProdutoDTO findById(Long id);
+
     void update(Long id, ProdutoDTO produto);
 
     List<ProdutoDTO> vencimentoChegando();

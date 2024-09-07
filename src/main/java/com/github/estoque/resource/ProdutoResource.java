@@ -21,6 +21,13 @@ public class ProdutoResource {
         return service.listAll();
     }
 
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ProdutoDTO exibirProdutoPorId(@PathParam("id") Long id) {
+        return service.findById(id);
+    }
+
     @POST
     public Response cadastrarProduto(ProdutoDTO produtoDTO) {
         try {
@@ -44,7 +51,11 @@ public class ProdutoResource {
     @GET
     @Path("/vencimento")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProdutoDTO> produtosPertoDoVencimento() {
-        return service.vencimentoChegando();
+    public Response produtosPertoDoVencimento() {
+        List<ProdutoDTO> produtos = service.vencimentoChegando();
+        if (produtos.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Nenhum produto com vencimento próximo").build();
+        }
+        return Response.ok().build();
     }
 }

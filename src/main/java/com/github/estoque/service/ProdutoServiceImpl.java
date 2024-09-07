@@ -4,13 +4,11 @@ import com.github.estoque.dto.ProdutoDTO;
 import com.github.estoque.entity.ProdutoEntity;
 import com.github.estoque.mapper.ProdutoMapper;
 import com.github.estoque.repository.ProdutoRepository;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
-     ProdutoMapper mapper;
+    ProdutoMapper mapper;
 
     @Inject
     ProdutoRepository repository;
@@ -39,6 +37,12 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    public ProdutoDTO findById(Long id) {
+        ProdutoEntity produto = repository.findById(id);
+        return mapper.toDTO(produto);
+    }
+
+    @Override
     @Transactional
     public void update(Long id, ProdutoDTO produtoDTO) {
         ProdutoEntity produto = repository.findById(id);
@@ -50,22 +54,24 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public List<ProdutoDTO> vencimentoChegando() {
-        PanacheQuery<ProdutoEntity> produtos = repository.findAll();
-        return produtos.list().stream()
+        List<ProdutoEntity> produtos = repository.listAll();
+        return produtos.stream()
                 .filter(p -> p.getDataValidade() != null && isProdutoVencendo(p.getDataValidade()))
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Verifica se o produto estará vencido no prazo de sete dias.
+     *
+     * @param dataValidade Data de validade do produto.
+     * @return Se o produto está no prazo de vencimento.
+     */
     private boolean isProdutoVencendo(LocalDate dataValidade) {
-        LocalDate now = LocalDate.now();
-
         if (dataValidade == null) {
             return false;
         }
-
-        Period period = Period.between(now, dataValidade);
-        int diff = Math.abs(period.getDays());
-        return diff < 7;
+        LocalDate now = LocalDate.now();
+        return !dataValidade.isBefore(now) && dataValidade.isBefore(now.plusDays(7));
     }
 }
