@@ -15,4 +15,6 @@ public interface ProdutoService {
     void update(Long id, ProdutoDTO produto);
 
     List<ProdutoDTO> vencimentoChegando();
+
+    List<ProdutoDTO> produtosVencidos();
 }

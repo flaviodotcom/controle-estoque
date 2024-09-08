@@ -56,6 +56,17 @@ public class ProdutoResource {
         if (produtos.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).entity("Nenhum produto com vencimento próximo").build();
         }
-        return Response.ok().build();
+        return Response.ok().entity(produtos).build();
+    }
+
+    @GET
+    @Path("/vencidos")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response produtosVencidos() {
+        List<ProdutoDTO> produtos = service.produtosVencidos();
+        if (produtos.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Nenhum produto vencido em estoque").build();
+        }
+        return Response.ok().entity(produtos).build();
     }
 }

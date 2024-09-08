@@ -57,22 +57,33 @@ public class ProdutoServiceImpl implements ProdutoService {
     public List<ProdutoDTO> vencimentoChegando() {
         List<ProdutoEntity> produtos = repository.listAll();
         return produtos.stream()
-                .filter(p -> p.getDataValidade() != null && isProdutoVencendo(p.getDataValidade()))
+                .filter(p -> p.getDataValidade() != null && verificarVencimento(p.getDataValidade(), false))
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProdutoDTO> produtosVencidos() {
+        List<ProdutoEntity> produtos = repository.listAll();
+        return produtos.stream()
+                .filter(p -> p.getDataValidade() != null && verificarVencimento(p.getDataValidade(), true))
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Verifica se o produto estará vencido no prazo de sete dias.
+     * Verifica se o produto está vencido ou se está prestes a vencer em sete dias.
      *
-     * @param dataValidade Data de validade do produto.
-     * @return Se o produto está no prazo de vencimento.
+     * @param dataValidade       Data de validade do produto.
+     * @param verificarSeVencido Se true, verifica se o produto já está vencido;
+     *                           caso contrário, verifica se vencerá nos próximos sete dias.
+     * @return true se a condição for atendida, false caso contrário.
      */
-    private boolean isProdutoVencendo(LocalDate dataValidade) {
-        if (dataValidade == null) {
-            return false;
-        }
+    private boolean verificarVencimento(LocalDate dataValidade, boolean verificarSeVencido) {
         LocalDate now = LocalDate.now();
+        if (verificarSeVencido) {
+            return dataValidade.isBefore(now);
+        }
         return !dataValidade.isBefore(now) && dataValidade.isBefore(now.plusDays(7));
     }
 }
