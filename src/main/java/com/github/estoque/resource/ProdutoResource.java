@@ -17,15 +17,17 @@ public class ProdutoResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProdutoDTO> exibirProdutos() {
-        return service.listAll();
+    public Response exibirProdutos() {
+        List<ProdutoDTO> produtos = service.listAll();
+        return Response.ok().entity(produtos).build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ProdutoDTO exibirProdutoPorId(@PathParam("id") Long id) {
-        return service.findById(id);
+    public Response exibirProdutoPorId(@PathParam("id") Long id) {
+        ProdutoDTO produtos = service.findById(id);
+        return Response.ok().entity(produtos).build();
     }
 
     @POST
