@@ -15,8 +15,10 @@ public interface ProdutoMapper {
 
     List<ProdutoDTO> toDTO(List<ProdutoEntity> produtoEntities);
 
+    @Mapping(target = "dataCadastro", ignore = true)
     ProdutoEntity toEntity(ProdutoDTO produtoDTO);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dataCadastro", ignore = true)
     ProdutoEntity toEntity(ProdutoDTO produtoDTO, @MappingTarget ProdutoEntity entity);
 }

@@ -1,6 +1,7 @@
 package com.github.estoque.resource;
 
 import com.github.estoque.dto.ProdutoDTO;
+import com.github.estoque.exceptions.DataCadastroAlteracaoException;
 import com.github.estoque.service.ProdutoService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -35,7 +36,10 @@ public class ProdutoResource {
         try {
             service.save(produtoDTO);
             return Response.status(Response.Status.CREATED).build();
-
+        } catch (DataCadastroAlteracaoException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(ex.getMessage())
+                    .build();
         } catch (Exception exception) {
             return Response.serverError().build();
         }
@@ -46,8 +50,16 @@ public class ProdutoResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response atualizarProduto(@PathParam("id") Long id, ProdutoDTO produto) {
-        service.update(id, produto);
-        return Response.noContent().build();
+        try {
+            service.update(id, produto);
+            return Response.noContent().build();
+        } catch (DataCadastroAlteracaoException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(ex.getMessage())
+                    .build();
+        } catch (Exception exception) {
+            return Response.serverError().build();
+        }
     }
 
     @GET
