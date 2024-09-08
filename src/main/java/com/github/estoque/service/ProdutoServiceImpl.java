@@ -2,7 +2,7 @@ package com.github.estoque.service;
 
 import com.github.estoque.dto.ProdutoDTO;
 import com.github.estoque.entity.ProdutoEntity;
-import com.github.estoque.exceptions.DataCadastroAlteracaoException;
+import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.mapper.ProdutoMapper;
 import com.github.estoque.repository.ProdutoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
