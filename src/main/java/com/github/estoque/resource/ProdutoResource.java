@@ -5,6 +5,8 @@ import com.github.estoque.exception.ConstraintViolationExceptionMapper;
 import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.service.ProdutoService;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.UnexpectedTypeException;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/estoque")
+@Authenticated
 public class ProdutoResource {
     @Inject
     ProdutoService service;
@@ -24,6 +27,7 @@ public class ProdutoResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin", "user"})
     public Response exibirProdutos() {
         List<ProdutoDTO> produtos = service.listAll();
         return Response.ok().entity(produtos).build();
@@ -31,6 +35,7 @@ public class ProdutoResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({"admin", "user"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response exibirProdutoPorId(@PathParam("id") Long id) {
         ProdutoDTO produtos = service.findById(id);
@@ -39,6 +44,7 @@ public class ProdutoResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response cadastrarProduto(@Valid ProdutoDTO produtoDTO) {
         try {
             service.save(produtoDTO);
@@ -66,6 +72,7 @@ public class ProdutoResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response atualizarProduto(@PathParam("id") Long id, @Valid ProdutoDTO produto) {
         try {
             service.update(id, produto);
@@ -87,6 +94,7 @@ public class ProdutoResource {
     @GET
     @Path("/vencimento")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin", "user"})
     public Response produtosPertoDoVencimento() {
         List<ProdutoDTO> produtos = service.vencimentoChegando();
         if (produtos.isEmpty()) {
@@ -98,6 +106,7 @@ public class ProdutoResource {
     @GET
     @Path("/vencidos")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"admin", "user"})
     public Response produtosVencidos() {
         List<ProdutoDTO> produtos = service.produtosVencidos();
         if (produtos.isEmpty()) {
