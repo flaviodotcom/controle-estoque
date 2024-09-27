@@ -6,6 +6,7 @@ import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.service.ProdutoService;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import io.quarkus.security.Authenticated;
+import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.reactive.RestResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -28,18 +30,24 @@ public class ProdutoResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin", "user"})
-    public Response exibirProdutos() {
-        List<ProdutoDTO> produtos = service.listAll();
-        return Response.ok().entity(produtos).build();
+    public Uni<RestResponse<List<ProdutoDTO>>> exibirProdutos() {
+        return service.listAll()
+                .onItem()
+                .transform(RestResponse::ok)
+                .onFailure().recoverWithItem(throwable ->
+                        RestResponse.status(500, "Erro ao buscar produtos"));
     }
 
     @GET
     @Path("/{id}")
     @RolesAllowed({"admin", "user"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response exibirProdutoPorId(@PathParam("id") Long id) {
-        ProdutoDTO produtos = service.findById(id);
-        return Response.ok().entity(produtos).build();
+    public Uni<RestResponse<ProdutoDTO>> exibirProdutoPorId(@PathParam("id") Long id) {
+        return service.findById(id)
+                .onItem()
+                .transform(RestResponse::ok)
+                .onFailure().recoverWithItem(throwable ->
+                        RestResponse.status(404, "O produto com id " + id + " não foi encontrado"));
     }
 
     @POST

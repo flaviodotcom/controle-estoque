@@ -5,6 +5,7 @@ import com.github.estoque.entity.ProdutoEntity;
 import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.mapper.ProdutoMapper;
 import com.github.estoque.repository.ProdutoRepository;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -35,15 +36,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public List<ProdutoDTO> listAll() {
-        List<ProdutoEntity> produtos = repository.listAll();
-        return mapper.toDTO(produtos);
+    public Uni<List<ProdutoDTO>> listAll() {
+        return Uni.createFrom()
+                .item(repository.listAll())
+                .onItem()
+                .transform(mapper::toDTO);
     }
 
-    @Override
-    public ProdutoDTO findById(Long id) {
-        ProdutoEntity produto = repository.findById(id);
-        return mapper.toDTO(produto);
+    public Uni<ProdutoDTO> findById(Long id) {
+        return Uni.createFrom()
+                .item(repository.findById(id))
+                .onItem()
+                .transform(mapper::toDTO);
     }
 
     @Override
