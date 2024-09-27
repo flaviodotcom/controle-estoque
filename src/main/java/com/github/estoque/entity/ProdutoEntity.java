@@ -34,6 +34,7 @@ public class ProdutoEntity {
 
     @NotNull(message = "Insira a quantidade do produto")
     @Column(nullable = false)
+    @DecimalMin(value = "0.01", message = "A quantidade de produtos precisa ser maior que 0")
     private Integer quantidade;
 
     @Column(name = "data_validade")
