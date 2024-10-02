@@ -1,10 +1,11 @@
-package com.github.estoque.service;
+package com.github.estoque.service.impl;
 
 import com.github.estoque.dto.ProdutoDTO;
 import com.github.estoque.entity.ProdutoEntity;
 import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.mapper.ProdutoMapper;
 import com.github.estoque.repository.ProdutoRepository;
+import com.github.estoque.service.ProdutoService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -55,8 +56,8 @@ public class ProdutoServiceImpl implements ProdutoService {
         } else if (produtoDTO.getDataCadastro() != null) {
             throw new DataCadastroAlteracaoException("Não é possível alterar a data de cadastro de um produto");
         }
-        mapper.toEntity(produtoDTO, produto);
-        repository.persist(produto);
+        ProdutoEntity produtoAtualizado = mapper.toEntity(produtoDTO, produto);
+        repository.persist(produtoAtualizado);
     }
 
     @Override

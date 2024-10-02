@@ -20,5 +20,6 @@ public interface ProdutoMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dataCadastro", ignore = true)
+    @Mapping(target = "ativo", ignore = true)
     ProdutoEntity toEntity(ProdutoDTO produtoDTO, @MappingTarget ProdutoEntity entity);
 }
