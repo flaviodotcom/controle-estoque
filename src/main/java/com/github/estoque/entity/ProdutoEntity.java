@@ -43,6 +43,10 @@ public class ProdutoEntity {
     @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
 
+    // TODO: verificar o motivo de chegar null nas consultas do banco.
+    @Column(name = "is_ativo", nullable = false)
+    private Boolean ativo = true;
+
     @PrePersist
     public void prePersist() {
         if (this.dataCadastro == null) {
