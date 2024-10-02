@@ -53,6 +53,7 @@ public class VendaServiceImpl implements VendaService {
         if (produtoEmEstoque == null || produtoEmEstoque.getQuantidade() < venda.getQuantidade()) {
             throw new IllegalArgumentException("A quantidade não está disponível no estoque");
         }
+        venda.setProduto(produtoEmEstoque);
         repository.persist(venda);
 
         if (produtoEmEstoque.getQuantidade().equals(venda.getQuantidade())) {
