@@ -1,56 +1,60 @@
 package com.github.estoque.entity;
 
-import jakarta.persistence.*;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.NotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "produto")
-public class ProdutoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ProdutoEntity extends PanacheEntity {
 
     @NotNull(message = "Insira o nome do produto")
     @NotBlank(message = "Insira o nome do produto")
     @Column(nullable = false)
-    private String nome;
+    public String nome;
 
     @DecimalMin(value = "0.01", message = "O preço do produto precisa ser maior que 0")
     @NotNull(message = "Insira o preço do produto")
     @Column(nullable = false)
-    private BigDecimal preco;
+    public BigDecimal preco;
 
     @NotNull(message = "Insira a quantidade do produto")
     @Column(nullable = false)
-    @DecimalMin(value = "0.01", message = "A quantidade de produtos precisa ser maior que 0")
-    private Integer quantidade;
+    @DecimalMin(value = "0", message = "A quantidade de produtos não pode ser negativa")
+    public Integer quantidade;
 
     @Column(name = "data_validade")
-    private LocalDate dataValidade;
+    public LocalDate dataValidade;
 
     @Column(name = "data_cadastro")
-    private LocalDate dataCadastro;
-
-    // TODO: verificar o motivo de chegar null nas consultas do banco.
-    @Column(name = "is_ativo", nullable = false)
-    private Boolean ativo = true;
+    public LocalDate dataCadastro;
 
     @PrePersist
     public void prePersist() {
         if (this.dataCadastro == null) {
             this.dataCadastro = LocalDate.now();
         }
+    }
+
+    public static ProdutoEntity findBy(Long id) {
+        return (ProdutoEntity) ProdutoEntity.findByIdOptional(id)
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
     }
 }
