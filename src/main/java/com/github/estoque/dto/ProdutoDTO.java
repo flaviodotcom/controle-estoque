@@ -17,5 +17,4 @@ public class ProdutoDTO {
     private Integer quantidade;
     private LocalDate dataValidade;
     private LocalDate dataCadastro;
-    private Boolean ativo;
 }

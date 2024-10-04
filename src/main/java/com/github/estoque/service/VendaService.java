@@ -7,5 +7,5 @@ import java.util.List;
 public interface VendaService {
     List<VendaDTO> listAll();
     VendaDTO findById(Long id);
-    void save(VendaDTO produto);
+    void save(VendaDTO novaVenda);
 }

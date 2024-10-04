@@ -4,25 +4,22 @@ import com.github.estoque.dto.ProdutoDTO;
 import com.github.estoque.entity.ProdutoEntity;
 import com.github.estoque.exception.DataCadastroAlteracaoException;
 import com.github.estoque.mapper.ProdutoMapper;
-import com.github.estoque.repository.ProdutoRepository;
 import com.github.estoque.service.ProdutoService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.github.estoque.entity.ProdutoEntity.findBy;
 
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     ProdutoMapper mapper;
-
-    @Inject
-    ProdutoRepository repository;
 
 
     @Override
@@ -32,48 +29,46 @@ public class ProdutoServiceImpl implements ProdutoService {
             throw new DataCadastroAlteracaoException("Não é possível alterar a data de cadastro de um produto");
         }
         ProdutoEntity newProduto = mapper.toEntity(produto);
-        repository.persist(newProduto);
+        newProduto.persist();
     }
 
     @Override
     public List<ProdutoDTO> listAll() {
-        List<ProdutoEntity> produtos = repository.listAll();
+        List<ProdutoEntity> produtos = ProdutoEntity.findAll().list();
         return mapper.toDTO(produtos);
     }
 
     @Override
     public ProdutoDTO findById(Long id) {
-        ProdutoEntity produto = repository.findById(id);
+        ProdutoEntity produto = findBy(id);
         return mapper.toDTO(produto);
     }
 
     @Override
     @Transactional
     public void update(Long id, ProdutoDTO produtoDTO) {
-        ProdutoEntity produto = repository.findById(id);
-        if (produto == null) {
-            throw new InputMismatchException("Produto com id " + id + " não encontrado");
-        } else if (produtoDTO.getDataCadastro() != null) {
+        ProdutoEntity produto = findBy(id);
+        if (produtoDTO.getDataCadastro() != null) {
             throw new DataCadastroAlteracaoException("Não é possível alterar a data de cadastro de um produto");
         }
         ProdutoEntity produtoAtualizado = mapper.toEntity(produtoDTO, produto);
-        repository.persist(produtoAtualizado);
+        produtoAtualizado.persist();
     }
 
     @Override
     public List<ProdutoDTO> vencimentoChegando() {
-        List<ProdutoEntity> produtos = repository.listAll();
+        List<ProdutoEntity> produtos = ProdutoEntity.listAll();
         return produtos.stream()
-                .filter(p -> p.getDataValidade() != null && verificarVencimento(p.getDataValidade(), false))
+                .filter(p -> p.dataValidade != null && verificarVencimento(p.dataValidade, false))
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ProdutoDTO> produtosVencidos() {
-        List<ProdutoEntity> produtos = repository.listAll();
+        List<ProdutoEntity> produtos = ProdutoEntity.listAll();
         return produtos.stream()
-                .filter(p -> p.getDataValidade() != null && verificarVencimento(p.getDataValidade(), true))
+                .filter(p -> p.dataValidade != null && verificarVencimento(p.dataValidade, true))
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
