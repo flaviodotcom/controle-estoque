@@ -1,5 +1,6 @@
 package com.github.estoque.resource;
 
+import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
@@ -8,6 +9,7 @@ import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -15,14 +17,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @QuarkusTest
+@TestHTTPEndpoint(ProdutoResource.class)
 class ProdutoResourceTest {
-
-    private final String jsonBody = """
-            {
-                "nome": "Refrigerante",
-                "preco": 8.0,
-                "quantidade": 1.0
-            }""";
 
     @BeforeAll
     static void setup() {
@@ -33,7 +29,7 @@ class ProdutoResourceTest {
     @TestSecurity(authorizationEnabled = false)
     void testGetProdutoById() {
         given()
-                .when().get("/estoque/203")
+                .when().get("/203")
                 .then()
                 .statusCode(200)
                 .body("id", is(203))
@@ -47,7 +43,7 @@ class ProdutoResourceTest {
     @TestSecurity(user = "jose", roles = {"admin", "user"})
     void testGetAllProdutos() {
         given()
-                .when().get("/estoque")
+                .when().get()
                 .then()
                 .statusCode(200)
                 .body("size() > 0", is(true));
@@ -58,8 +54,8 @@ class ProdutoResourceTest {
     void testCadastrarProdutoComAutorizacao() {
         given()
                 .contentType(ContentType.JSON)
-                .body(jsonBody)
-                .when().post("/estoque")
+                .body(generateProdutoJson("Coxinha", new BigDecimal("5.00"), 2))
+                .when().post()
                 .then().statusCode(201);
     }
 
@@ -68,8 +64,8 @@ class ProdutoResourceTest {
     void testCadastrarProdutoSemAutorizacao() {
         given()
                 .contentType(ContentType.JSON)
-                .body(jsonBody)
-                .when().post("/estoque")
+                .body(generateProdutoJson("Copo de café", new BigDecimal("1.00"), 1))
+                .when().post()
                 .then().statusCode(403);
     }
 
@@ -78,8 +74,8 @@ class ProdutoResourceTest {
     void testAtualizarProdutoComAutorizacao() {
         given()
                 .contentType(ContentType.JSON)
-                .body(jsonBody)
-                .when().put("/estoque/204")
+                .body(generateProdutoJson("Biscoito", new BigDecimal("3.50"), 1))
+                .when().put("/204")
                 .then().statusCode(204);
     }
 
@@ -88,8 +84,8 @@ class ProdutoResourceTest {
     void testAtualizarProdutoSemAutorizacao() {
         given()
                 .contentType(ContentType.JSON)
-                .body(jsonBody)
-                .when().put("/estoque/204")
+                .body(generateProdutoJson("Refrigerante", new BigDecimal("10.00"), 1))
+                .when().put("/204")
                 .then().statusCode(403);
     }
 
@@ -97,7 +93,7 @@ class ProdutoResourceTest {
     @TestSecurity(user = "alice", roles = "user")
     void testProdutosQueEstaoPertoDoVencimento() {
         given()
-                .when().get("/estoque/vencimento")
+                .when().get("/vencimento")
                 .then().statusCode(200)
                 .body("nome.toString().contains(\"Pão\")", is(true));
     }
@@ -106,9 +102,19 @@ class ProdutoResourceTest {
     @TestSecurity(user = "alice", roles = "user")
     void testProdutosQueEstaoVencidos() {
         given()
-                .when().get("/estoque/vencidos")
+                .when().get("/vencidos")
                 .then().statusCode(200)
                 .body("nome", is(List.of("Pão de Queijo")));
+    }
+
+    String generateProdutoJson(String nome, BigDecimal preco, Integer quantidade) {
+        return String.format("""
+                {
+                    "nome": "%s",
+                    "preco": %s,
+                    "quantidade": %d
+                }
+                """, nome, preco, quantidade);
     }
 
 }
