@@ -1,4 +1,4 @@
-package com.github.estoque;
+package com.github.estoque.resource;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

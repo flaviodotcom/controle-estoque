@@ -9,7 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,8 +81,8 @@ public class ProdutoServiceImpl implements ProdutoService {
      *                           caso contrário, verifica se vencerá nos próximos sete dias.
      * @return true se a condição for atendida, false caso contrário.
      */
-    private boolean verificarVencimento(LocalDate dataValidade, boolean verificarSeVencido) {
-        LocalDate now = LocalDate.now();
+    private boolean verificarVencimento(LocalDateTime dataValidade, boolean verificarSeVencido) {
+        LocalDateTime now = LocalDateTime.now();
         if (verificarSeVencido) {
             return dataValidade.isBefore(now);
         }
