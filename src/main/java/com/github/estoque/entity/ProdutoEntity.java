@@ -1,6 +1,7 @@
 package com.github.estoque.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @NoArgsConstructor
@@ -41,15 +42,17 @@ public class ProdutoEntity extends PanacheEntity {
     public Integer quantidade;
 
     @Column(name = "data_validade")
-    public LocalDate dataValidade;
+    @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
+    public LocalDateTime dataValidade;
 
     @Column(name = "data_cadastro")
-    public LocalDate dataCadastro;
+    @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
+    public LocalDateTime dataCadastro;
 
     @PrePersist
     public void prePersist() {
         if (this.dataCadastro == null) {
-            this.dataCadastro = LocalDate.now();
+            this.dataCadastro = LocalDateTime.now();
         }
     }
 
