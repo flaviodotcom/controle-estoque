@@ -55,7 +55,7 @@ class ProdutoResourceTest {
 
     @Test
     @TestSecurity(user = "jose", roles = {"admin", "user"})
-    void testCadatrarProdutoComAutorizacao() {
+    void testCadastrarProdutoComAutorizacao() {
         given()
                 .contentType(ContentType.JSON)
                 .body(jsonBody)
