@@ -61,4 +61,11 @@ public class VendaServiceImpl implements VendaService {
         produtoEmEstoque.persist();
     }
 
+    @Override
+    public List<VendaDTO> filterVendasPorOrdenacao(String order) {
+        String ordenacao = order.equalsIgnoreCase("ASC") ? "ASC" : "DESC";
+        List<VendaEntity> venda = VendaEntity.find("ORDER BY total " + ordenacao).list();
+        return mapper.toDTO(venda);
+    }
+
 }

@@ -8,4 +8,5 @@ public interface VendaService {
     List<VendaDTO> listAll();
     VendaDTO findById(Long id);
     void save(VendaDTO novaVenda);
+    List<VendaDTO> filterVendasPorOrdenacao(String order);
 }

@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Setter
@@ -31,10 +32,17 @@ public class VendaEntity extends PanacheEntity {
     @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
     public LocalDateTime dataVenda;
 
+    @Column(name = "total", nullable = false)
+    public BigDecimal total;
+
     @PrePersist
     public void prePersist() {
         if (this.dataVenda == null) {
             this.dataVenda = LocalDateTime.now();
         }
+        if (this.total == null) {
+            this.total = produto.preco.multiply(BigDecimal.valueOf(quantidade));
+        }
     }
+
 }

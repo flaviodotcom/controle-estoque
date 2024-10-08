@@ -35,7 +35,7 @@ class ProdutoResourceTest {
                 .body("id", is(203))
                 .body("nome", is("Pão"))
                 .body("preco", is(1.00f))
-                .body("quantidade", is(1))
+                .body("quantidade", is(10))
                 .body("dataValidade", notNullValue());
     }
 

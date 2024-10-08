@@ -5,10 +5,7 @@ import com.github.estoque.service.VendaService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -33,6 +30,14 @@ public class VendaResource {
     public Response exibirVendaById(@PathParam("id") Long id) {
         VendaDTO vendaById = service.findById(id);
         return Response.ok(vendaById).build();
+    }
+
+    @GET
+    @Path("/list")
+    @RolesAllowed({"admin", "user"})
+    public Response filtrarVendas(@QueryParam("order") String order) {
+        List<VendaDTO> maioresVendas = service.filterVendasPorOrdenacao(order);
+        return Response.ok(maioresVendas).build();
     }
 
     @POST
