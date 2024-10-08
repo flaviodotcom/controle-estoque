@@ -1,7 +1,7 @@
 package com.github.estoque.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
@@ -42,11 +42,11 @@ public class ProdutoEntity extends PanacheEntity {
     public Integer quantidade;
 
     @Column(name = "data_validade")
-    @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     public LocalDateTime dataValidade;
 
     @Column(name = "data_cadastro")
-    @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     public LocalDateTime dataCadastro;
 
     @PrePersist

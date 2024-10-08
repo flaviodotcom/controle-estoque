@@ -23,7 +23,7 @@ public class VendaServiceImpl implements VendaService {
 
     @Override
     public List<VendaDTO> listAll() {
-        List<VendaEntity> vendas = VendaEntity.findAll().list();
+        List<VendaEntity> vendas = VendaEntity.listAll();
         return mapper.toDTO(vendas);
     }
 

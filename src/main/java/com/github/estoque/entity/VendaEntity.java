@@ -1,7 +1,7 @@
 package com.github.estoque.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class VendaEntity extends PanacheEntity {
     public Integer quantidade;
 
     @Column(name = "data_venda", nullable = false)
-    @JsonbDateFormat(value = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     public LocalDateTime dataVenda;
 
     @Column(name = "total", nullable = false)

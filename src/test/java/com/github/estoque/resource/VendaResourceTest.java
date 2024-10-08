@@ -1,10 +1,19 @@
 package com.github.estoque.resource;
 
+import com.github.estoque.entity.VendaEntity;
+import io.quarkus.panache.mock.PanacheMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
@@ -21,6 +30,19 @@ class VendaResourceTest {
                 .get()
                 .then().statusCode(200)
                 .body("isEmpty()", is(false));
+    }
+
+    @Test
+    @TestSecurity(authorizationEnabled = false)
+    void testExibirListaDeVendasVazia() {
+        PanacheMock.mock(VendaEntity.class);
+        Mockito.when(VendaEntity.listAll()).thenReturn(Collections.emptyList());
+
+        given()
+                .when()
+                .get()
+                .then().statusCode(200)
+                .body("$.size()", is(0));
     }
 
     @Test
@@ -42,7 +64,7 @@ class VendaResourceTest {
         given()
                 .when()
                 .contentType(ContentType.JSON)
-                .body(generateVendaJson(1, 203))
+                .body(generateVendaJson(2, 203))
                 .when().post()
                 .then().statusCode(201);
     }
@@ -51,7 +73,7 @@ class VendaResourceTest {
     @TestSecurity(authorizationEnabled = false)
     void testNaoRegistrarVendaQuandoOIdDoProdutoNaoEhEncontrado() {
         given()
-        .when()
+                .when()
                 .contentType(ContentType.JSON)
                 .body(generateVendaJson(1, 888))
                 .when().post()
@@ -84,6 +106,27 @@ class VendaResourceTest {
                 .body(generateVendaJson(100, 205))
                 .when().post()
                 .then().statusCode(400);
+    }
+
+    @Test
+    @TestSecurity(authorizationEnabled = false)
+    void testOrdenarVendasComBaseNoValorTotal() {
+        List<String> order = Arrays.asList("DESC", "ASC");
+
+        for (String ordenacao : order) {
+            List<BigDecimal> totalVendas = given()
+                    .when()
+                    .queryParam("order", ordenacao)
+                    .when().get("/list")
+                    .then().statusCode(200)
+                    .extract().jsonPath().getList("total", BigDecimal.class);
+
+            if (ordenacao.equals("DESC")) {
+                Assertions.assertEquals(1, totalVendas.get(0).compareTo(totalVendas.get(1)));
+            } else {
+                Assertions.assertEquals(-1, totalVendas.get(0).compareTo(totalVendas.get(1)));
+            }
+        }
     }
 
     String generateVendaJson(Integer quantidade, Integer idProduto) {
